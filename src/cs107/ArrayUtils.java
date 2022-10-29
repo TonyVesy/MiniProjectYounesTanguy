@@ -26,7 +26,21 @@ public final class ArrayUtils {
      * @throws AssertionError if one of the parameters is null
      */
     public static boolean equals(byte[] a1, byte[] a2){
-        return Helper.fail("Not Implemented");
+        if (( a1 == null) && (a2 == null)){
+            return true;
+        }
+        assert (a1 != null);
+        assert (a2 != null);
+        if (a1.length != a2.length){
+            return false;
+        }
+        for (int i = 0; i <= a1.length; ++i ){
+            boolean test = a1[i] == a2[i];
+            if (test == false){
+                return false;
+            }
+        } return true;
+
     }
 
     /**
@@ -50,7 +64,8 @@ public final class ArrayUtils {
      * @return (byte[]) - array with one element (value)
      */
     public static byte[] wrap(byte value){
-        return Helper.fail("Not Implemented");
+        byte[] array = {value};
+        return array;
     }
 
     // ==================================================================================
@@ -66,8 +81,15 @@ public final class ArrayUtils {
      * @throws AssertionError if the input is null or the input's length is different from 4
      */
     public static int toInt(byte[] bytes){
-        return Helper.fail("Not Implemented");
-    }
+
+        assert (bytes == null);
+
+        int nombre = 0;
+        for (int i = 0; i <= 3; ++i) {
+            nombre += bytes[i] << 8 * (3 - i);
+        }
+        return nombre; }
+     //on prend le premier nombre du tableau et on le deplace de 8 bit et on repet pour les nombre suivants
 
     /**
      * Separate the Integer (word) to 4 bytes. The Memory layout of this integer is "Big Endian"
