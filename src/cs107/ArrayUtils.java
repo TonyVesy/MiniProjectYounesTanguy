@@ -214,11 +214,6 @@ public final class ArrayUtils {
 
 
     }
-
-    // ==================================================================================
-    // ============================== ARRAY FORMATTING METHODS ==========================
-    // ==================================================================================
-
     /**
      * Format a 2-dim integer array
      * where each dimension is a direction in the image to
@@ -231,7 +226,42 @@ public final class ArrayUtils {
      * or one of the inner arrays of input is null
      */
     public static byte[][] imageToChannels(int[][] input){
-        return Helper.fail("Not Implemented");
+
+        assert input == null;
+        boolean nul = false;
+            for (int i = 0; i < input.length; i++) {
+                    if(input[i]==null){
+                        nul=true;
+                    }
+
+            }
+        // voir si une des lignes est null dans ce cas on assert
+        assert nul;
+
+        /**
+         * IL MANQUE QUE LA TAILLEE DES COLONES SOIENT LES MEMES
+         */
+
+
+        byte [][] array = new byte[(input.length)*(input[0].length)][4];
+        // nombre de lignes du tableau ligne*colonnes de l'image et 4 colonne pour le rgba
+
+
+        for (int i=0 ;i<(input.length)*(input[0].length);){
+            for (int ligne=0 ;ligne<(input.length);++ligne){
+
+                for (int col=0 ;col<(input[0].length);++col){
+
+                    array [i]= fromInt(input[ligne][col]);
+                    //System.out.print(array [i][0]+" "+array [i][1]+" "+array [i][2]+" "+array [i][3]+" ");
+                    ++i;
+                }
+            }
+        }
+
+
+        return array;
+
     }
 
     /**
@@ -249,7 +279,34 @@ public final class ArrayUtils {
      * or width is invalid
      */
     public static int[][] channelsToImage(byte[][] input, int height, int width){
-        return Helper.fail("Not Implemented");
+
+        assert input==null;
+
+        for (int i =0;i<height;++i){
+            assert input[i]==null;
+            if (input[i].length == 4) throw new AssertionError();
+        }
+        assert height*width==input.length;
+
+        assert input==null;
+
+
+        int [][] image = new int[height][width];
+
+        for (int i=0;i<height*width;++i) {
+            for (int j = 0; j < height; ++j) {
+                for (int k = 0; k < width; ++k) {
+
+                    image[j][k] =  toInt(input[i]);
+                    System.out.print(image[j][k]+" ");
+                    ++i;
+
+                }
+                System.out.println();
+            }
+        }
+
+        return image;
     }
 
 }

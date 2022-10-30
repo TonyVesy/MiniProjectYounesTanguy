@@ -8,44 +8,46 @@ public class testeur {
         System.out.println("_________________debut test__________");
 
         ArrayUtils.partition(tab, 3, 1, 3, 2);
-    }
+        int [][] image = {{1,2,3,4,5},
+        {1,2,3,4,5},
+        {1,2,3,4,5},
+        {1,2,3,4,5},
+        {1,2,3,4,5},
+        {1,2,3,4,5},};
+
+        System.out.println(image.length+""+image[0].length);
+
+        byte[] test =ArrayUtils.fromInt(1);
+        for(int j=0;j<4;++j){
+            System.out.print(test[j]+" ");}
 
 
+        int[][] input = {{1, 2, 3, 4, 5},
+                {6, 7, 8, 9 ,10},
+                {11, 12, 13, 14, 15}};
 
-    public static byte[][] partition(byte[] input, int ... sizes) {
+        byte[][] output = ArrayUtils.imageToChannels(input);
 
+        for(int i=0;i<15;++i){
 
-        assert(input == null);
-        assert(sizes == null);
-
-        int somme=0;
-        for(int size : sizes){
-            somme+=size;
-        }
-        assert((somme-1) == sizes.length);
-
-
-        byte [][] array = new byte[sizes.length][];
-        int j=0;
-        int k=0;
-
-        for(int size : sizes){
-            array[j] = new byte [size];
-            for(int i=0;i<size;++i){
-                array[j][i]=input[k];
-
-                System.out.print(array[j][i]);
-                ++k;
-            }
+            System.out.print(output[i][0]+" ");
+            System.out.print(output[i][1]+" ");
+            System.out.print(output[i][2]+" ");
+            System.out.print(output[i][3]+" ");
             System.out.println();
-            ++j;
-
         }
-        return array;
+
+        System.out.println("-------------retour");
+        byte[][] formatted_input = {
+                {0,0, 0,1},{0,0, 0,2},{0,0, 0,3}, {0,0, 0,4},{0,0, 0,5},{0,0, 0,6}, {0,0, 0,7},{0,0, 0,8},{0,0, 0,9}, {0, 0, 0, 10}, {0, 0, 0, 11}, {0, 0, 0, 12}, {0, 0, 0, 13}, {0, 0, 0, 14}, {0, 0, 0, 15}};
+// output = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]]
+        int[][] output2 = ArrayUtils.channelsToImage(formatted_input, 3, 5);
+
+    }
 
 
 
 
     }
-}
+
 
