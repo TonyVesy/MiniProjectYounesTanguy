@@ -68,9 +68,6 @@ public final class ArrayUtils {
         return array;
     }
 
-    // ==================================================================================
-    // ========================== INTEGER MANIPULATION METHODS ==========================
-    // ==================================================================================
 
     /**
      * Create an Integer using the given array. The input needs to be considered
@@ -82,9 +79,11 @@ public final class ArrayUtils {
      */
     public static int toInt(byte[] bytes){
 
-        assert (bytes == null);
+        assert bytes == null;
+        assert bytes.length!=4;
 
         int nombre = 0;
+
         for (int i = 0; i <= 3; ++i) {
             nombre += bytes[i] << 8 * (3 - i);
         }
@@ -98,12 +97,16 @@ public final class ArrayUtils {
      * @return (byte[]) - Big Endian representation of the integer
      */
     public static byte[] fromInt(int value){
-        return Helper.fail("Not Implemented");
+
+        byte [] array =new byte[4];
+        int somme=0;
+
+        for (int i=0;i<4;++i){
+            array[i]=(byte)(value >> 8*(3-i));
+        }
+        return array;
     }
 
-    // ==================================================================================
-    // ========================== ARRAY CONCATENATION METHODS ===========================
-    // ==================================================================================
 
     /**
      * Concatenate a given sequence of bytes and stores them in an array
@@ -112,7 +115,18 @@ public final class ArrayUtils {
      * @throws AssertionError if the input is null
      */
     public static byte[] concat(byte ... bytes){
-        return Helper.fail("Not Implemented");
+
+        assert bytes==null;
+
+        byte [] array =new byte[bytes.length];
+        int i =0;
+        for (byte byt : bytes){
+            array [i] =byt;
+            System.out.println(array[i]);
+            ++i;
+        }
+
+        return array;
     }
 
     /**
@@ -140,7 +154,21 @@ public final class ArrayUtils {
      * start + length should also be smaller than the input's length
      */
     public static byte[] extract(byte[] input, int start, int length){
-        return Helper.fail("Not Implemented");
+
+        assert input==null;
+        assert (length<0)|(start<0)|(length<start)|((length+1)<input.length);
+
+
+        byte [] array =new byte[length-start+1];
+        int j=0;
+
+        for(int i=start;i<=length;++i){
+            array[j]=input[i];
+            ++j;
+        }
+
+
+        return array;
     }
 
     /**
@@ -154,7 +182,37 @@ public final class ArrayUtils {
      * or the sum of the elements in sizes is different from the input's length
      */
     public static byte[][] partition(byte[] input, int ... sizes) {
-        return Helper.fail("Not Implemented");
+
+        assert(input == null);
+        assert(sizes == null);
+
+        int somme=0;
+        for(int size : sizes){
+            somme+=size;
+        }
+        assert((somme) == sizes.length);
+
+
+        byte [][] array = new byte[sizes.length][];
+        int j=0;
+        int k=0;
+
+        for(int size : sizes){
+            array[j] = new byte [size];
+            for(int i=0;i<size;++i){
+                array[j][i]=input[k];
+
+                //System.out.print(array[j][i]);
+                ++k;
+            }
+            //System.out.println();
+            ++j;
+
+        }
+        return array;
+
+
+
     }
 
     // ==================================================================================
