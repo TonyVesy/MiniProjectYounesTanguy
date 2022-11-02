@@ -156,13 +156,16 @@ public final class ArrayUtils {
     public static byte[] extract(byte[] input, int start, int length){
 
         assert input==null;
-        assert (length<0)|(start<0)|(length<start)|((length+1)<input.length);
+        assert start<0;
+        assert start>input.length;
+        assert length<0;
+        assert start+length>input.length;
 
 
-        byte [] array =new byte[length-start+1];
+        byte [] array =new byte[length];
         int j=0;
 
-        for(int i=start;i<=length;++i){
+        for(int i=start;i<start+length;++i){
             array[j]=input[i];
             ++j;
         }
@@ -214,6 +217,34 @@ public final class ArrayUtils {
 
 
     }
+
+    //-----------------------------------------------------------------------------------------------------------------
+    //methode ajoutéee en plus pour changer de ARGB a RGBA le arrray
+
+    public static byte [] ARGBtoRGBA(byte[]ARGB){
+        assert ARGB.length!=4;
+        byte [] RGBA =new byte[4];
+        RGBA[0]=ARGB[1];
+        RGBA[1]=ARGB[2];
+        RGBA[2]=ARGB[3];
+        RGBA[3]=ARGB[0];
+
+
+        return RGBA;
+    }
+
+    public static byte [] RGBAtoARGB(byte[]RGBA){
+        assert RGBA.length!=4;
+        byte [] ARGB =new byte[4];
+        ARGB[0]=RGBA[3];
+        ARGB[1]=RGBA[0];
+        ARGB[2]=RGBA[1];
+        ARGB[3]=RGBA[2];
+
+
+        return ARGB;
+    }
+
     /**
      * Format a 2-dim integer array
      * where each dimension is a direction in the image to
@@ -252,8 +283,9 @@ public final class ArrayUtils {
 
                 for (int col=0 ;col<(input[0].length);++col){
 
-                    array [i]= fromInt(input[ligne][col]);
+                    array [i]= ARGBtoRGBA(fromInt(input[ligne][col]));
                     //System.out.print(array [i][0]+" "+array [i][1]+" "+array [i][2]+" "+array [i][3]+" ");
+                    //System.out.println();
                     ++i;
                 }
             }
@@ -284,7 +316,7 @@ public final class ArrayUtils {
 
         for (int i =0;i<height;++i){
             assert input[i]==null;
-            if (input[i].length == 4) throw new AssertionError();
+            if (input[i].length != 4) throw new AssertionError();
         }
         assert height*width==input.length;
 
@@ -297,7 +329,7 @@ public final class ArrayUtils {
             for (int j = 0; j < height; ++j) {
                 for (int k = 0; k < width; ++k) {
 
-                    image[j][k] =  toInt(input[i]);
+                    image[j][k] =  toInt(RGBAtoARGB(input[i]));
                     System.out.print(image[j][k]+" ");
                     ++i;
 

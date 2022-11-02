@@ -26,7 +26,25 @@ public final class QOIEncoder {
      * @return (byte[]) - Corresponding "Quite Ok Image" Header
      */
     public static byte[] qoiHeader(Helper.Image image){
-        return Helper.fail("Not Implemented");
+
+        assert image==null;
+        assert (image.channels()!=QOISpecification.RGB)||(image.channels()!=QOISpecification.RGBA);
+        assert (image.color_space()!=QOISpecification.sRGB)||(image.color_space()!=QOISpecification.ALL);
+
+
+        int[][] dim= image.data();
+        byte[] hauteur = ArrayUtils.fromInt(dim.length);
+        byte[] largeur= ArrayUtils.fromInt(dim[0].length);
+
+        byte [] header =ArrayUtils.concat(
+                QOISpecification.QOI_MAGIC,
+                largeur,
+                hauteur,
+                ArrayUtils.wrap(image.channels()),
+                ArrayUtils.wrap(image.color_space()));
+
+        return header;
+
     }
 
     // ==================================================================================
@@ -40,7 +58,13 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the pixel using the QOI_OP_RGB schema
      */
     public static byte[] qoiOpRGB(byte[] pixel){
-        return Helper.fail("Not Implemented");
+        assert pixel.length!=4;
+
+        byte[] encode  = ArrayUtils.concat(
+                ArrayUtils.wrap(QOISpecification.QOI_OP_RGB_TAG),
+                ArrayUtils.extract(pixel,0,3)
+                );
+        return encode;
     }
 
     /**
@@ -50,7 +74,13 @@ public final class QOIEncoder {
      * @return (byte[]) Encoding of the pixel using the QOI_OP_RGBA schema
      */
     public static byte[] qoiOpRGBA(byte[] pixel){
-        return Helper.fail("Not Implemented");
+        assert pixel.length!=4;
+
+        byte[] encode  = ArrayUtils.concat(
+                ArrayUtils.wrap(QOISpecification.QOI_OP_RGBA_TAG),
+                pixel
+        );
+        return encode;
     }
 
     /**
@@ -60,7 +90,11 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the index using the QOI_OP_INDEX schema
      */
     public static byte[] qoiOpIndex(byte index){
-        return Helper.fail("Not Implemented");
+
+        assert index<0;
+        assert index>63;
+
+        return ArrayUtils.wrap((byte) (QOISpecification.QOI_OP_INDEX_TAG|index));
     }
 
     /**
