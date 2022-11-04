@@ -7,6 +7,9 @@ package cs107;
  * @version 1.3
  * @since 1.0
  */
+
+import java.util.ArrayList;
+
 public final class QOIEncoder {
 
     /**
@@ -105,7 +108,23 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of the given difference
      */
     public static byte[] qoiOpDiff(byte[] diff){
-        return Helper.fail("Not Implemented");
+
+        assert diff==null;
+
+        assert diff.length!=3;
+
+        for (int i=0;i<3;++i){
+            if(diff[i]>1||diff[i]<-2) throw new AssertionError();
+        }
+
+        byte dr= (byte) ((diff[0]+2)<<4);
+        // décale de 4
+        byte dg= (byte) (((diff[1]+2)<<2));
+        // décale de 2
+        byte db= (byte) ((diff[2]+2));
+
+
+        return ArrayUtils.wrap((byte) (QOISpecification.QOI_OP_DIFF_TAG|dr|dg|db));
     }
 
     /**
@@ -127,7 +146,14 @@ public final class QOIEncoder {
      * @return (byte[]) - Encoding of count
      */
     public static byte[] qoiOpRun(byte count){
-        return Helper.fail("Not Implemented");
+
+        assert count<=0;
+
+        assert count>62;
+
+
+        return ArrayUtils.wrap((byte) (QOISpecification.QOI_OP_RUN_TAG|(count-1)));
+
     }
 
     // ==================================================================================
@@ -141,7 +167,112 @@ public final class QOIEncoder {
      * @return (byte[]) - "Quite Ok Image" representation of the image
      */
     public static byte[] encodeData(byte[][] image){
-        return Helper.fail("Not Implemented");
+
+        assert image == null;
+
+        for(int i= 0;i<image[0].length* image.length;++i){
+
+            if (image[i] ==null)throw new AssertionError();
+            if (image[i].length != 4) throw new AssertionError();
+        }
+
+
+        byte [][]hachtable =new byte [64][4];
+        byte  [] previouspixel = QOISpecification.START_PIXEL ;
+        int LastPixel=image.length;
+
+
+        ArrayList< byte[]> list =new ArrayList();
+        //ajout d'un array list contenant des tableaux de byte pour chaque pixel ou suite de pixel selon l'algorythme
+
+
+
+        for(int i= 0;i<LastPixel;++i){
+
+            //1. Si pixel== pixel précédent, augmenter le compteur et tester si un QOI_OP_RUN peut être construit
+            // (compteur atteignant la limite de 62 ou dernier pixel atteint), puis passer au pixel suivant,
+            // sinon tester si un QOI_OP_RUN peut être construit et aller à l’étape 2.
+
+            byte count=0;
+
+                while(ArrayUtils.equals(image[i],previouspixel)
+                        &&count<=62
+                        &&i+count<(LastPixel)){
+
+                              ++count;
+                              ++i;
+            }
+                if(count>0){
+                    list.add(qoiOpRun(count));
+                    //reset du count
+                    count=0;
+
+                }
+
+
+            //2. Si pixel est dans la table de hachage (il a la même valeur que le pixel stocké à la position qui lui revient selon sa clé de hachage)
+            // , créer un bloc QOI_OP_INDEX et passer au pixel suivant, sinon ajouter le pixel à la table de hachage et aller à l’étape 3.
+
+
+
+
+
+            //3. Si le canal alpha est le même entre le pixel courant et le précédent,
+            // et que la différence entre ces pixels est faible (selon les critères spécifiques aux blocs QOI_OP_DIFFa)
+            // alors créer un bloc QOI_OP_DIFF et passer au pixel suivant, sinon aller à l’étape 4.
+            byte diffr= (byte) (image[i][0]-previouspixel[0]);
+            byte diffg= (byte) (image[i][1]-previouspixel[1]);
+            byte diffb= (byte) (image[i][2]-previouspixel[2]);
+            byte diffa= (byte) (image[i][3]-previouspixel[3]);
+
+
+            if (diffa == 0) {
+
+                if ((diffr >= -2 && diffr <= 1) && (diffg >= -2 && diffg <= 1) && (diffb >= -2 && diffb <= 1)) {
+                    byte [] diff={diffr,diffg,diffb};
+                    list.add(qoiOpDiff(diff));
+
+                }
+                //4. Si le canal alpha est le même entre le pixel courant et le précédent,
+                // et que la différence entre entre ces pixels correpond aux critères des blocs QOI_OP_LUMA,
+                // alors créer un bloc de ce type et passer au pixel suivant, sinon aller à l’étape 5.
+
+                else if ((diffg >= -32 && diffg <= 31) && (diffr-diffg>= -8 && diffr-diffg <= 7) && (diffb-diffg >= -8 && diffb-diffg  <= 7)) {
+                    byte [] diff={diffr,diffg,diffb};
+                    list.add(qoiOpLuma(diff));
+
+                }
+                //5. Si le canal alpha est le même entre le pixel courant et le précédent,
+                // créer un bloc QOI_OP_RGB (la valeur du canal alpha étant celle commune aux deux pixels)
+                // et passer au pixel suivant, sinon aller à l’étape 6.
+                else{
+                    byte[ ] RGB= {image[i][0],image[i][1],image[i][2]};
+                    list.add(qoiOpRGB(RGB));
+                }
+
+            } // fin de A vaut A du previous
+
+            //6. créer un bloc QOI_OP_RGBA et passer au pixel suivant
+            byte[ ] RGBA= {image[i][0],image[i][1],image[i][2],image[i][3]};
+            list.add(qoiOpRGB(RGBA));
+
+        }
+        //fin de la creation de l'array list maintenant il faut tout concatener
+
+        int concatsize=0;
+        for (int i=0;i<list.size();++i){
+            concatsize+= (list.get(i)).length;
+        }
+        byte [] encode = new byte [concatsize];
+
+        for (int i=0;i<list.size();++i){
+            encode = ArrayUtils.concat(encode,list.get(i));
+        }
+
+
+
+        return encode;
+
     }
 
     /**

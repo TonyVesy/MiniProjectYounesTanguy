@@ -1,5 +1,7 @@
 package cs107;
 
+import java.util.ArrayList;
+
 public class testeur {
     public static void main(String[] args) {
         ArrayUtils.concat((byte) 1, (byte) 6, (byte) 3, (byte) -44);
@@ -61,6 +63,32 @@ public class testeur {
         // output = [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15]]
         int[][] output2 = ArrayUtils.channelsToImage(formatted_input, 3, 5);
         Hexdump.hexdump(tab);
+        byte[] diif={-2,-1,0};
+        byte[] diiif=QOIEncoder.qoiOpDiff(diif);
+        System.out.println(diiif[0]);
+        byte count= 41;
+        byte[]run = QOIEncoder.qoiOpRun(count);
+        System.out.println(run[0]);
+
+        System.out.println("-------------test arry list");
+
+        ArrayList< byte[]> tabdebyte=new ArrayList();
+        byte[] d={2,1,0};
+        byte[] dd={0,1,0,4};
+        byte[] dddd={1,};
+
+        tabdebyte.add(d);
+        tabdebyte.add(dd);
+        tabdebyte.add(dddd);
+
+        Hexdump.hexdump(tabdebyte.get(0));
+        Hexdump.hexdump(tabdebyte.get(1));
+        Hexdump.hexdump(tabdebyte.get(2));
+
+
+
+
+
 
 
     }
